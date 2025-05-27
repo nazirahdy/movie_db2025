@@ -27,7 +27,7 @@
     <form action="{{ route('logout') }}" method="POST">
       @csrf
       <button type="submit" class="nav-link btn btn-link text-white" style="text-decoration: none;">
-        Logout
+        Logout ya
       </button>
     </form>
   </li>
