@@ -6,9 +6,10 @@ use App\Models\Category;
 use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+ 
 class MovieController extends Controller
 {
+    // Tampilkan daftar movie dengan pagination
     public function index()
     {
         $movies = Movie::with('category')->paginate(6);
@@ -20,37 +21,88 @@ class MovieController extends Controller
         ]);
     }
 
+    // Form untuk buat movie baru
     public function create()
     {
         $categories = Category::all();
         return view('movie_form', compact('categories'));
     }
 
+    // Simpan movie baru ke database
     public function store(Request $request)
     {
+        // validasi input
         $data = $request->validate([
             'title'       => 'required|string|max:255',
             'synopsis'    => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'year'        => 'required|integer|min:1900|max:' . date('Y'),
+            'year'        => 'required|integer|min:1900|max:'.date('Y'),
             'actors'      => 'required|string',
             'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+        // upload file cover_image ke storage/app/public/cover_images
         $path = $request->file('cover_image')->store('cover_images', 'public');
-        $data['cover_image'] = '/storage/' . $path;
+        $data['cover_image'] = '/storage/'.$path;
 
+        // generate slug dari title
         $data['slug'] = Str::slug($data['title']);
 
+        // simpan ke table movies
         Movie::create($data);
 
         return redirect()->route('homepage')
                          ->with('success', 'Movie berhasil disimpan!');
     }
 
+    // Detail satu movie
     public function show($id)
     {
         $movie = Movie::with('category')->findOrFail($id);
         return view('movie_detail', compact('movie'));
     }
+
+ public function edit($id)
+{
+    $movie = Movie::findOrFail($id);
+    $categories = Category::all();
+
+    return view('edit', compact('movie', 'categories'));
+}
+
+
+public function destroy($id)
+{
+    $movie = Movie::findOrFail($id);
+    $movie->delete();
+
+    return redirect()->route('homepage')->with('success', 'Movie deleted successfully!');
+}
+
+public function update(Request $request, $id)
+{
+    $movie = Movie::findOrFail($id);
+
+    $data = $request->validate([
+        'title'       => 'required|string|max:255',
+        'synopsis'    => 'required|string',
+        'category_id' => 'required|exists:categories,id',
+        'year'        => 'required|integer|min:1900|max:'.date('Y'),
+        'actors'      => 'required|string',
+        'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    if ($request->hasFile('cover_image')) {
+        $path = $request->file('cover_image')->store('cover_images', 'public');
+        $data['cover_image'] = '/storage/'.$path;
+    }
+
+    $data['slug'] = Str::slug($data['title']);
+
+    $movie->update($data);
+
+    return redirect()->route('movies.show', $movie->id)
+                     ->with('success', 'Movie updated successfully!');
+}
+
 }

@@ -1,13 +1,10 @@
 @extends('layouts.template')
 
-@section('title','Form input movie')
-
 @section('content')
+<h2 class="mb-4">Form Data Movie</h2>
 
-{{-- form movie --}}
-<h1>Form Data Movie</h1>
-<form action="/movie/store" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-    @csrf {{-- Jangan lupa token CSRF untuk keamanan --}}
+<form action="{{ route('movies.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+   @csrf {{-- Jangan lupa token CSRF untuk keamanan --}}
 
     {{-- Title --}}
     <div class="mb-3 row">

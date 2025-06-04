@@ -2,18 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    use HasFactory;
+    protected $fillable = ['category_name', 'description'];
 
-    protected $fillable = [
-        'category_name',
-    ];
-
-    public function movies()
+    public function movie(): HasMany
     {
         return $this->hasMany(Movie::class);
     }
