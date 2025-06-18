@@ -3,30 +3,60 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\RoleAdmin;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| PUBLIC ROUTES (Tanpa Login)
+|--------------------------------------------------------------------------
+*/
+Route::get('/admin/movies', [MovieController::class, 'indexadmin'])->name('admin.movies.list');
+// Halaman homepage menampilkan daftar movie
+Route::get('/', [MovieController::class, 'index'])->name('homepage');
 
-
-Route::get('/', [MovieController::class, 'index']);
-
+// Detail movie untuk user (bukan admin)
 Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
 
-Route::get('/movie/create', [MovieController::class, 'create'])->name('movie.create');
-Route::Post('/movie',[MovieController::class,'store'])->name('movie.store');
-Route::Post('/',[MovieController::class,'index'])->name('homepage');
-
-Route::get('/login', [AuthController::class,'formLogin'])->name('login');
-
-Route::post('/login', [AuthController::class,'login']);
-Route::post('/logout',[AuthController::class, 'destroy'])->name('logout');
-
-Route::get('/movies/create', [MovieController::class, 'create'])->name('movies.create');
-Route::post('/movies', [MovieController::class, 'store'])->name('movies.store');
+// Halaman login & proses login
+Route::get('/login', [AuthController::class, 'formLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
 
-Route::get('/movies/{id}/edit', [MovieController::class, 'edit'])->name('movies.edit');
-Route::delete('/movies/{id}', [MovieController::class, 'destroy'])->name('movies.destroy');
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ROUTES (Harus Login)
+|--------------------------------------------------------------------------
+*/
 
-Route::put('/movies/{id}', [MovieController::class, 'update'])->name('movies.update');
+Route::middleware('auth')->group(function () {
+    
+    // Logout
+    Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+
+    // Halaman list movie versi admin
+ 
+
+    // Halaman detail movie (admin)
+    Route::get('/movies/{id}/detail', [MovieController::class, 'detail'])->name('detail');
+
+    // Halaman form edit movie (admin)
+    Route::get('/movies/{id}/edit', [MovieController::class, 'edit'])->name('movie.edit')->middleware('auth', RoleAdmin::class);
+
+    // Halaman form tambah movie baru
+    Route::get('/movie/create', [MovieController::class, 'create'])->name('movies.create');
+
+    // Proses simpan movie baru
+    Route::post('/movie/store', [MovieController::class, 'store'])->name('movies.store');
+
+    // Proses update movie
+    Route::put('/movies/{id}', [MovieController::class, 'update'])->name('movie.update')->middleware('auth', RoleAdmin::class);;
+
+    // Hapus movie
+    Route::delete('/movies/{id}', [MovieController::class, 'destroy'])->name('movie.destroy');
+
+    Route::get('/movie', [MovieController::class, 'index'])->name('movie.index');
+
+    Route::get('/admin/movies', [MovieController::class, 'searching'])->name('admin.movies.list');
+
+
+});

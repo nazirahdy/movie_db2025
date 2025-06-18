@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -21,19 +22,19 @@ class CategorySeeder extends Seeder
             ],
             [
                 'category_name' => 'Comedy',
-                'description' => 'Film dengan adegan-adegan menghibur dan mengundang tawa',
+                'description' => 'Film yang bertujuan untuk menghibur',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'category_name' => 'Drama',
-                'description' => 'Film yang berfokus pada pengembangan karakter dan konflik emosional',
+                'description' => 'Film dengan adegan-adegan penuh aksi dan ketegangan',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'category_name' => 'Sci-Fi',
-                'description' => 'Film dengan latar belakang ilmiah dan teknologi futuristik',
+                'category_name' => 'Sci-fi',
+                'description' => 'Film dengan adegan-adegan penuh aksi dan ketegangan',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -43,6 +44,6 @@ class CategorySeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+            ]);
     }
 }
